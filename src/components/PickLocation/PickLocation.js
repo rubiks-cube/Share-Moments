@@ -7,7 +7,7 @@ class PickLocation extends Component {
 
     state ={
       focusedRegion:{
-          latitude: 29.655 ,
+          latitude: 26.655 ,
           longitude: 84.915,
           latitudeDelta:0.01 ,
           longitudeDelta: Dimensions.get('window').width / Dimensions.get('window').height *0.01
@@ -23,7 +23,7 @@ class PickLocation extends Component {
           ...this.state.focusedRegion,
           latitude: coords.latitude,
           longitude: coords.longitude
-      })
+      });
      
       this.setState(prevState =>{
         
@@ -35,6 +35,11 @@ class PickLocation extends Component {
               }, 
               locationChosen:true
           }
+      });
+
+      this.props.onLocationPick({
+          latitude:coords.latitude,
+          longitude:coords.longitude
       });
       
     }
@@ -52,7 +57,7 @@ class PickLocation extends Component {
            this.pickLocationHandler(coordsEvent);
         },
         err=>{
-          alert('Fetching failed!');
+          console.log(err);
        });
     }
 

@@ -3,6 +3,7 @@ import {View,Text,Button,Image, StyleSheet,TouchableOpacity,Platform,Dimensions}
 import Icon from 'react-native-vector-icons/Ionicons';
 import {connect} from 'react-redux';
 import {deletePlace} from '../../store/actions/index' ;
+import MapView from 'react-native-maps';
 
 class PlaceDetail extends Component{
 
@@ -36,8 +37,20 @@ class PlaceDetail extends Component{
    
      <View style={[styles.container,this.state.viewMode==="portrait"?
         styles.portraitContainer:styles.landscapeContainer]}>
+        <View style={styles.PlaceDetailcontainer}>
        <View style={styles.subContainer}>
         <Image source={this.props.selectedPlace.image} style={styles.placeImg}/>
+        </View>
+
+        <View style={styles.subContainer}>
+        <MapView initialRegion={{
+            ...this.props.selectedPlace.location,
+            latitudeDelta:0.01 ,
+          longitudeDelta: Dimensions.get('window').width / Dimensions.get('window').height *0.01
+          }}  style={styles.map}> 
+            <MapView.Marker coordinate={this.props.selectedPlace.location}/>
+        </MapView>
+        </View>
         </View>
 
      <View  style={styles.subContainer}>
@@ -76,9 +89,12 @@ const styles = StyleSheet.create({
     },
     placeImg:{
         width:"100%",
-        height:200,
+        height:"100%",
         marginBottom:10
 
+    },
+    map:{
+        ...StyleSheet.absoluteFillObject
     },
     placeName:{
         fontWeight: "bold",
@@ -93,6 +109,10 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems:"center",
         height:"90%"
+    },
+    PlaceDetailcontainer:{
+        flex:2
+
     }
 });
 
@@ -101,5 +121,7 @@ const mapDispatchToProps = dispatch =>{
         onDeletePlace : (key) => dispatch(deletePlace(key))
     }
 }
+
+
 
 export default connect(null,mapDispatchToProps)(PlaceDetail);
