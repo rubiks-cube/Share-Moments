@@ -1,5 +1,5 @@
 import placeImg from '../../assets/beautiful-place.jpg';
-import {ADD_PLACE,DELETE_PLACE} from '../actions/actionTypes';
+import {SET_PLACES,REMOVE_PLACE} from '../actions/actionTypes';
 
 
 const initialState = {
@@ -10,24 +10,17 @@ const initialState = {
 const reducer = (state = initialState, action) => {
     switch(action.type){
 
-    case ADD_PLACE:
+    case SET_PLACES:
     return {
      ...state,
-     places: state.places.concat({
-        key:Math.random().toString(),
-        name: action.placeName,  
-        image: {
-            uri:action.image.uri
-        },
-        location:action.location
-       })
+     places: action.places
     };
 
-    case DELETE_PLACE:
+    case REMOVE_PLACE:
     return{
         ...state,
         places: state.places.filter(place =>{
-            return place.key !== action.placeKey;
+            return place.key !== action.key;
           })
     };
 

@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import{View,Text,TextInput,Button,StyleSheet,ScrollView,Image} from 'react-native';
+import{View,Text,TextInput,Button,StyleSheet,ScrollView,Image,ActivityIndicator} from 'react-native';
 import {connect} from 'react-redux';
 import {addPlace} from '../../store/actions/index';
 import PlaceInput from '../../components/PlaceInput/PlaceInput';
@@ -106,6 +106,16 @@ class SharePlacesScreen extends Component {
   }
 
     render(){
+      let submitBtn = (
+        <Button disabled={!this.state.controls.placeName.valid || !this.state.controls.location.valid
+            ||! this.state.controls.image.valid} 
+          title="Share It"  onPress={this.placeAddedHandler}/>
+
+      );
+      if(this.props.isLoading){
+        submitBtn = <ActivityIndicator/>;
+      }
+
        return(
            <ScrollView >
            <View style={styles.container}>
@@ -114,9 +124,7 @@ class SharePlacesScreen extends Component {
                <PickLocation onLocationPick={this.locationPickedHandler}/>
               <PlaceInput placeData={this.state.controls.placeName} onTextChanged={this.placeNameChangedHandler}/>
                <View  style={styles.button}>
-               <Button disabled={!this.state.controls.placeName.valid || !this.state.controls.location.valid
-                 ||! this.state.controls.image.valid} 
-               title="Share It"  onPress={this.placeAddedHandler}/>
+                 {submitBtn}
                </View>
              </View>
            </ScrollView>
@@ -145,10 +153,17 @@ const styles=StyleSheet.create({
     }
 });
 
+
+const mapStateToProps = state =>{
+    return{
+        isLoading: state.ui.isLoading
+    };
+}
+
 const mapDispatchToProps = dispatch => {
       return {
           onAddPlace: (placeName,location,image) => dispatch(addPlace(placeName,location,image))
       }
     }
 
-export default connect(null, mapDispatchToProps)(SharePlacesScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SharePlacesScreen);

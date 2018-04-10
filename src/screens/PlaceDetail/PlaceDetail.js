@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         height:"90%"
     },
     PlaceDetailcontainer:{
-        flex:2
+        flex:2   
 
     }
 });
