@@ -15,14 +15,14 @@ Navigation.registerComponent('share-moments.AuthScreen', () => AuthScreen,store,
 Navigation.registerComponent('share-moments.SharePlaceScreen', () => SharePlaceScreen,store,Provider);
 Navigation.registerComponent('share-moments.FindPlaceScreen', () => FindPlacesScreen,store,Provider);
 Navigation.registerComponent('share-moments.PlaceDetailScreen', () => PlaceDetailScreen,store,Provider);
-Navigation.registerComponent('share-moments.SideDrawer', () => SideDrawer);
+Navigation.registerComponent('share-moments.SideDrawer', () => SideDrawer,store,Provider);
 
 
 
 
 
 
-Navigation.startSingleScreenApp({
+ export default () => Navigation.startSingleScreenApp({
   screen:{
     screen:"share-moments.AuthScreen",
     title:'Login'

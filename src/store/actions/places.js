@@ -1,17 +1,24 @@
 import {SET_PLACES,REMOVE_PLACE} from './actionTypes';
-import {uiStartLoading,uiStopLoading} from './index';
+import {uiStartLoading,uiStopLoading,getAuthToken} from './index';
 
 export const addPlace = (placeName,location,image) =>{
      
     return dispatch => {
-
+         let authToken;
        dispatch(uiStartLoading());
-
-        fetch("https://us-central1-moments-3393.cloudfunctions.net/storeImage",{
+       dispatch(getAuthToken())
+       .catch(()=>{
+        alert("no valid token found");
+        })
+        .then(token =>{
+            authToken =token;
+           return fetch("https://us-central1-moments-3393.cloudfunctions.net/storeImage",{
             method: 'POST',
-            body:JSON.stringify({
-                image:image.base64
-            })
+            body:JSON.stringify({ image:image.base64 }),
+            headers:{
+                "Authorization":"Bearer "+ authToken
+            }
+           })
         })
         .catch(err=>{
             console.log(err);
@@ -26,20 +33,21 @@ export const addPlace = (placeName,location,image) =>{
                 location:location,
                 image: response.imageUrl
             };
-           return  fetch("https://moments-3393.firebaseio.com/places.json",{
+           return  fetch("https://moments-3393.firebaseio.com/places.json?auth=" + authToken,{
                     method: 'POST',
                     body:JSON.stringify(placeData)
                 })
         })
-        .catch(err=>{
-            console.log(err);
-            alert("Something went wrong, please try again!");
-            dispatch(uiStopLoading());
-        })
+       
         .then(res=>res.json())
         .then(response=>{
             console.log(response);
             alert("Uploaded successfully!");
+            dispatch(uiStopLoading());
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("Something went wrong, please try again!");
             dispatch(uiStopLoading());
         });
 
@@ -48,19 +56,29 @@ export const addPlace = (placeName,location,image) =>{
 }
 
 export const deletePlace = (key) =>{
-    return  dispatch => {
-        dispatch(removePlace(key));
-        fetch("https://moments-3393.firebaseio.com/places/"+key+".json",{
-            method: 'DELETE',
+    return  (dispatch) => {
+        dispatch(getAuthToken())
+        .catch(()=>{
+            alert("no valid token found");
+        }) 
+
+        .then(token =>{
+           
+          dispatch(removePlace(key));
+       
+         return   fetch("https://moments-3393.firebaseio.com/places/"+key+".json?auth="+token,{
+            method: 'DELETE'
+             })
         })
-        .catch(err=>{
-            console.log(err);
-            alert("Something went wrong, please try again!");
-        })
+       
         .then(res=>res.json())
         .then(response=>{
             console.log(response);
             alert("Delete successfully!");
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("Something went wrong, please try again!");
         });
 
     };
@@ -81,14 +99,17 @@ export const setPlaces = places =>{
 }
 
 export const getPlaces = () =>{
-    return dispatch =>{
-        fetch("https://moments-3393.firebaseio.com/places.json")
-        .catch(err=>{
-            console.log(err);
-            alert("Fetching failed :/");
-        })
-        .then(res => res.json())
-        .then(response =>{
+    return (dispatch) =>{
+       dispatch(getAuthToken())
+       .catch(()=>{
+        alert("no valid token found");
+       }) 
+       .then(token =>{
+          return  fetch("https://moments-3393.firebaseio.com/places.json?auth="+token)
+       })
+       
+      .then(res => res.json())
+      .then(response =>{
             const places = [];
             for (let key in response){
                 places.push({
@@ -101,6 +122,10 @@ export const getPlaces = () =>{
             }
             dispatch(setPlaces(places))
         })
+        .catch(err=>{
+            console.log(err);
+            alert("Fetching failed :/");
+        });
     }
 };
 
