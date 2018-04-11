@@ -1,5 +1,11 @@
-import {SET_PLACES,REMOVE_PLACE} from './actionTypes';
+import {SET_PLACES,REMOVE_PLACE,PLACE_ADDED,START_ADD_PLACE} from './actionTypes';
 import {uiStartLoading,uiStopLoading,getAuthToken} from './index';
+
+export const startAddPlace =() =>{
+    return {
+        type:START_ADD_PLACE
+    }
+}
 
 export const addPlace = (placeName,location,image) =>{
      
@@ -25,13 +31,21 @@ export const addPlace = (placeName,location,image) =>{
             alert("Something went wrong, please try again!");
             dispatch(uiStopLoading());
         })
-        .then(res=>res.json())
+        .then(res=>{
+            if(res.ok){
+             return res.json();
+            }else{
+                throw new Error();
+            }
+            
+        })
         .then(response=>{
 
             const placeData ={
                 name:placeName,
                 location:location,
-                image: response.imageUrl
+                image: response.imageUrl,
+                imagePath:response.imagePath
             };
            return  fetch("https://moments-3393.firebaseio.com/places.json?auth=" + authToken,{
                     method: 'POST',
@@ -39,11 +53,19 @@ export const addPlace = (placeName,location,image) =>{
                 })
         })
        
-        .then(res=>res.json())
+        .then(res=>{
+            if(res.ok){
+             return res.json();
+            }else{
+                throw new Error();
+            }
+            
+        })
         .then(response=>{
             console.log(response);
             alert("Uploaded successfully!");
             dispatch(uiStopLoading());
+            dispatch(placeAdded());
         })
         .catch(err=>{
             console.log(err);
@@ -53,6 +75,12 @@ export const addPlace = (placeName,location,image) =>{
 
     };  
    
+}
+
+export const placeAdded = () =>{
+    return {
+        type: PLACE_ADDED
+    }
 }
 
 export const deletePlace = (key) =>{
@@ -71,7 +99,14 @@ export const deletePlace = (key) =>{
              })
         })
        
-        .then(res=>res.json())
+        .then(res=>{
+            if(res.ok){
+             return res.json();
+            }else{
+                throw new Error();
+            }
+            
+        })
         .then(response=>{
             console.log(response);
             alert("Delete successfully!");
@@ -108,7 +143,14 @@ export const getPlaces = () =>{
           return  fetch("https://moments-3393.firebaseio.com/places.json?auth="+token)
        })
        
-      .then(res => res.json())
+      .then(res => {
+        if(res.ok){
+         return res.json();
+        }else{
+            throw new Error();
+        }
+        
+    })
       .then(response =>{
             const places = [];
             for (let key in response){

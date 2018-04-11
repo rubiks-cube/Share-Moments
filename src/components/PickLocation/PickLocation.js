@@ -15,7 +15,17 @@ class PickLocation extends Component {
       locationChosen:false
     };
 
-
+reset =()=>{
+    this.setState({
+        focusedRegion:{
+            latitude: 26.655 ,
+            longitude: 84.915,
+            latitudeDelta:0.01 ,
+            longitudeDelta: Dimensions.get('window').width / Dimensions.get('window').height *0.01
+        },
+        locationChosen:false
+    });
+}
 
     pickLocationHandler = event =>{
       const coords = event.nativeEvent.coordinate;
@@ -45,7 +55,9 @@ class PickLocation extends Component {
     }
 
     getLocationHandler = () =>{
-        navigator.geolocation.getCurrentPosition(pos =>{
+        
+     navigator.geolocation.getCurrentPosition(pos =>{
+            
         const coordsEvent  = {
             nativeEvent:{
                 coordinate:{
@@ -68,8 +80,9 @@ class PickLocation extends Component {
      }
      return(
          <View style={styles.container}>
-        <MapView initialRegion={this.state.focusedRegion}   style={styles.map}
-          onPress={this.pickLocationHandler}  ref={ref=> this.map=ref}>
+        <MapView initialRegion={this.state.focusedRegion} 
+        region={!this.state.locationChosen?this.state.focusedRegion:null}  
+        style={styles.map}  onPress={this.pickLocationHandler}  ref={ref=> this.map=ref}>
           {marker}
           </MapView>
         <View  style={styles.button}> 
